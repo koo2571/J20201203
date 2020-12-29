@@ -82,7 +82,7 @@ public class TipBoardDao {
 						board.setBd_view(rs.getInt(9));
 						board.setBd_like(rs.getInt(10));
 						board.setBd_date(rs.getString(11));
-						board.setS_score(rs.getInt(12));
+						board.setS_score(rs.getDouble(12));
 						board.setS_cnt(rs.getInt(13));
 						board.setS_price(rs.getDouble(14));
 						list.add(board);
@@ -103,7 +103,7 @@ public class TipBoardDao {
 			PreparedStatement pstmt = null;
 			ResultSet rs = null;
 			String sql1 = "select nvl(max(bd_num),0) from board";
-			String sql2 = "insert into board values(?,?,?,?,?,?,?,?,?,to_char(sysdate),?,?,?)";
+			String sql2 = "insert into board values(?,?,?,?,?,?,?,?,?,to_char(sysdate, 'yy/mm/dd hh24:mi'),?,?,?)";
 			try {
 				conn = getConnection();
 				pstmt = conn.prepareStatement(sql1);
@@ -121,7 +121,7 @@ public class TipBoardDao {
 				pstmt.setString(7, board.getBd_pic());
 				pstmt.setInt(8, board.getBd_view());
 				pstmt.setInt(9, board.getBd_like());
-				pstmt.setInt(10, board.getS_score());
+				pstmt.setDouble(10, board.getS_score());
 				pstmt.setInt(11, board.getS_cnt());
 				pstmt.setDouble(12, board.getS_price());
 				result = pstmt.executeUpdate();
@@ -173,7 +173,7 @@ public class TipBoardDao {
 					board.setBd_view(rs.getInt(8));
 					board.setBd_like(rs.getInt(9));
 					board.setBd_date(rs.getString(10));
-					board.setS_score(rs.getInt(11));
+					board.setS_score(rs.getDouble(11));
 					board.setS_cnt(rs.getInt(12));
 					board.setS_price(rs.getDouble(13));
 				}
@@ -221,6 +221,22 @@ public class TipBoardDao {
 			}finally {
 				if(pstmt != null) pstmt.close();
 				if(conn != null) conn.close();
+			}
+			return result;
+		}
+		//삭제
+		public int delete(int bd_num) {
+			int result = 0;
+			Connection conn = null;
+			PreparedStatement pstmt = null;
+			String sql = "delete from board where bd_num=?";
+			try {
+				conn = getConnection();
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, bd_num);
+				result =pstmt.executeUpdate();
+			} catch (Exception e) {
+				System.out.println("delete Exception->"+e.getMessage());
 			}
 			return result;
 		}

@@ -12,7 +12,6 @@
 
 </head>
 <body>
-	<input type="hidden" name="id" value="${id }">
    <div>
        <nav class="navbar navbar-dark bg-dark">
                 

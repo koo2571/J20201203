@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import dao.UserInfoDao;
 
@@ -21,8 +22,10 @@ public class LoginProAction implements CommandProcess {
 		     
 		     UserInfoDao sbd = UserInfoDao.getInstance();
 		     
+		     HttpSession session = request.getSession();
+		     
 		     int result = sbd.selectId(id,pw);
-		     request.setAttribute("id", id);
+			 if(result >0) session.setAttribute("id", id);
 		     request.setAttribute("result", result);
 		     
 		}catch(Exception e) {

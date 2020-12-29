@@ -10,12 +10,7 @@ public class LoginFormAction implements CommandProcess {
 
 	@Override
 	public String requestPro(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		
-		
-		
-		
-		
+			throws ServletException, IOException {										
 		return "user/loginFormAction.jsp";
 	}
 

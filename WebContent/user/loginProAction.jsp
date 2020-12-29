@@ -18,7 +18,7 @@
       <c:if test="${result == -1 }">
            <script type="text/javascript">
                  alert('비밀번호가 틀렸습니다.');
-                 location.href='login.do';
+                 location.href='loginForm.do';
            </script>
       </c:if>
       
