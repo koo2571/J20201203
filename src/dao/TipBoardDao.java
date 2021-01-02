@@ -38,7 +38,7 @@ public class TipBoardDao {
 			Connection conn = null;
 			PreparedStatement pstmt = null;
 			ResultSet rs = null;
-			String sql = "select count(*) from board";
+			String sql = "select count(*) from board where type_num=200";
 			try {
 				conn = getConnection();
 				pstmt = conn.prepareStatement(sql);
@@ -60,9 +60,10 @@ public class TipBoardDao {
 			Connection conn = null;
 			PreparedStatement pstmt = null;
 			ResultSet rs = null;
-			String sql = "SELECT * from (select rownum rn ,a.*"
-					+ "from  (select * from board order by bd_num desc) a )"
-					+ "WHERE rn between ? and ?";
+			String sql = "SELECT * FROM "
+					+ "(SELECT ROWNUM RN, A.* FROM "
+					+ "( SELECT b.* , (SELECT count(*) FROM comments c WHERE b.id =  c.id AND b.bd_num = c.bd_num ) comments_count FROM BOARD b WHERE b.TYPE_NUM = 200"
+					+ "ORDER BY BD_NUM DESC) A) WHERE RN BETWEEN ? AND ?";
 			try {
 				conn = getConnection();
 				pstmt = conn.prepareStatement(sql);
@@ -85,6 +86,7 @@ public class TipBoardDao {
 						board.setS_score(rs.getDouble(12));
 						board.setS_cnt(rs.getInt(13));
 						board.setS_price(rs.getDouble(14));
+						board.setComments_count(rs.getInt(15));
 						list.add(board);
 					}while(rs.next());
 				}
@@ -101,34 +103,25 @@ public class TipBoardDao {
 			int result = 0;
 			Connection conn = null;
 			PreparedStatement pstmt = null;
-			ResultSet rs = null;
-			String sql1 = "select nvl(max(bd_num),0) from board";
-			String sql2 = "insert into board values(?,?,?,?,?,?,?,?,?,to_char(sysdate, 'yy/mm/dd hh24:mi'),?,?,?)";
+			String sql2 = "insert into board values(?,bd_num_seq.nextval,?,?,?,?,?,?,?,to_char(sysdate, 'yy/mm/dd hh24:mi'),?,?,?)";
 			try {
 				conn = getConnection();
-				pstmt = conn.prepareStatement(sql1);
-				rs = pstmt.executeQuery();
-				rs.next();
-				int number = rs.getInt(1)+1;
-				pstmt.close();
 				pstmt = conn.prepareStatement(sql2);
 				pstmt.setString(1, board.getId());
-				pstmt.setInt(2, number);
-				pstmt.setInt(3, board.getType_num());
-				pstmt.setString(4, board.getBd_title());
-				pstmt.setString(5, board.getBd_cont());
-				pstmt.setString(6, board.getBd_video());
-				pstmt.setString(7, board.getBd_pic());
-				pstmt.setInt(8, board.getBd_view());
-				pstmt.setInt(9, board.getBd_like());
-				pstmt.setDouble(10, board.getS_score());
-				pstmt.setInt(11, board.getS_cnt());
-				pstmt.setDouble(12, board.getS_price());
+				pstmt.setInt(2, board.getType_num());
+				pstmt.setString(3, board.getBd_title());
+				pstmt.setString(4, board.getBd_cont());
+				pstmt.setString(5, board.getBd_video());
+				pstmt.setString(6, board.getBd_pic());
+				pstmt.setInt(7, board.getBd_view());
+				pstmt.setInt(8, board.getBd_like());
+				pstmt.setDouble(9, board.getS_score());
+				pstmt.setInt(10, board.getS_cnt());
+				pstmt.setDouble(11, board.getS_price());
 				result = pstmt.executeUpdate();
 			} catch (Exception e) {
 				System.out.println("insert exception ->"+e.getMessage());
 			}finally {
-				if(rs != null) rs.close();
 				if(pstmt != null) pstmt.close();
 				if(conn != null) conn.close();
 			}
@@ -138,7 +131,7 @@ public class TipBoardDao {
 		public void view(int bd_num) throws SQLException { 
 			Connection conn = null;
 			PreparedStatement pstmt = null;
-			String sql = "update board set bd_view = bd_view+1 where bd_num=?";
+			String sql = "update board set bd_view = bd_view+1 where bd_num=? and type_num=200";
 			try {
 				conn = getConnection();
 				pstmt = conn.prepareStatement(sql);
@@ -156,7 +149,7 @@ public class TipBoardDao {
 			Connection conn = null;
 			PreparedStatement pstmt = null;
 			ResultSet rs = null;
-			String sql = "select * from board where bd_num=?";
+			String sql = "select * from board where bd_num=? and type_num=200";
 			try {
 				conn = getConnection();
 				pstmt = conn.prepareStatement(sql);
@@ -190,7 +183,7 @@ public class TipBoardDao {
 		public void like(int bd_num) throws SQLException {
 			Connection conn = null;
 			PreparedStatement pstmt = null;
-			String sql = "update board set bd_like = bd_like+1 where bd_num=?";
+			String sql = "update board set bd_like = bd_like+1 where bd_num=? and type_num=200";
 			try {
 				conn = getConnection();
 				pstmt = conn.prepareStatement(sql);
@@ -208,13 +201,14 @@ public class TipBoardDao {
 			int result = 0;
 			Connection conn = null;
 			PreparedStatement pstmt = null;
-			String sql = "update board set bd_title=?,bd_cont=? where bd_num=?";
+			String sql = "update board set bd_title=?,bd_cont=?,bd_pic=? where bd_num=? and type_num=200";
 			try {
 				conn = getConnection();
 				pstmt = conn.prepareStatement(sql);
 				pstmt.setString(1, board.getBd_title());
 				pstmt.setString(2, board.getBd_cont());
-				pstmt.setInt(3, board.getBd_num());
+				pstmt.setString(3, board.getBd_pic());
+				pstmt.setInt(4, board.getBd_num());
 				result = pstmt.executeUpdate();
 			} catch (Exception e) {
 				System.out.println("update Exception->"+e.getMessage());
@@ -229,10 +223,15 @@ public class TipBoardDao {
 			int result = 0;
 			Connection conn = null;
 			PreparedStatement pstmt = null;
-			String sql = "delete from board where bd_num=?";
+			String sql1 = "delete from comments where bd_num=? and type_num=200";
+			String sql2 = "delete from board where bd_num=? and type_num=200";
 			try {
 				conn = getConnection();
-				pstmt = conn.prepareStatement(sql);
+				pstmt = conn.prepareStatement(sql1);
+				pstmt.setInt(1, bd_num);
+				pstmt.executeUpdate();
+				pstmt.close();
+				pstmt = conn.prepareStatement(sql2);
 				pstmt.setInt(1, bd_num);
 				result =pstmt.executeUpdate();
 			} catch (Exception e) {

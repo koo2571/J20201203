@@ -11,6 +11,7 @@
 <body>
 <h2>팁&노하우 게시판</h2>
 	<input type="hidden" name="id" value="${id }">
+	<input type="hidden" name="type_num" value="200">
 <table>
 	<tr>
 	<td><a href="tipWrite.do?id=${id }">글쓰기</a></td>
@@ -30,7 +31,12 @@
 		<c:forEach var="tipBoard" items="${list }">
 				<tr>
 				<td>${startNum }</td>
+				<c:if test="${tipBoard.comments_count>0 }">
+				<td><a href="tipContent.do?bd_num=${tipBoard.bd_num }&pageNum=${currentPage}&id=${id}">${tipBoard.bd_title }</a>&nbsp;&nbsp;<a href="tipContent.do?bd_num=${tipBoard.bd_num }&pageNum=${currentPage}&id=${id}">[${tipBoard.comments_count }]</a></td>
+				</c:if>
+				<c:if test="${tipBoard.comments_count==0 }">
 				<td><a href="tipContent.do?bd_num=${tipBoard.bd_num }&pageNum=${currentPage}&id=${id}">${tipBoard.bd_title }</a></td>
+				</c:if>
 				<td>${tipBoard.id }</td>
 				<td>${tipBoard.bd_date }</td>
 				<td>${tipBoard.bd_view }</td>
@@ -54,5 +60,23 @@
 			<a href="tipList.do?pageNum=${startPage+blockSize }">[다음]</a>
 		</c:if>
 	</div>
+	
+	
+	
+	<form action="tipList.do" method="get">
+         <table>
+            <tr>
+               <td align="center">
+                  <select id="searchValue" name="searchValue">
+                     <option value="subject">제목</option>
+                     <option value="content">내용</option>               
+                     <option value="writer">작성자</option>
+                  </select>
+                  <input id="searchkeyWord" name="searchkeyWord" type="text">
+                  <input type="submit" value="검색 ">
+               </td>
+            </tr>      
+         </table>
+      </form>
 </body>
 </html>

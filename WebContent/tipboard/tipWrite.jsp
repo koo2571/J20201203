@@ -8,7 +8,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-<form action="tipWritePro.do?bd_num=${bd_num }&pageNum=${pageNum }&id=${id}" method="post">
+<form action="tipWritePro.do?bd_num=${bd_num }&pageNum=${pageNum }&id=${id}&type_num=200" method="post" enctype="multipart/form-data">
 	<input type="hidden" name="id" value="${id }">
 	<input type="hidden" name="type_num" value="200">
 	<table border="1">
@@ -19,7 +19,11 @@
 		</tr>
 		<tr>
 			<td>작성내용</td>
-			<td><textarea rows="30" cols="30" name="bd_cont" required="required"></textarea></td>
+			<td><pre><textarea rows="30" cols="30" name="bd_cont" required="required"></textarea></pre></td>
+		</tr>
+		<tr>
+			<td>첨부파일</td>
+			<td><input type="file" name="bd_pic"></td>
 		</tr>
 		<tr>
 			<td><input type="submit" value="글쓰기"></td>

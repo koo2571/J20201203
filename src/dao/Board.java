@@ -2,10 +2,16 @@ package dao;
 
 public class Board {
   private String id,bd_title,bd_cont,bd_video,bd_pic,bd_date,s_cart,s_pic;
-  private int bd_num,type_num,bd_view,bd_like,s_cnt;
+  private int bd_num,type_num,bd_view,bd_like,s_cnt,comments_count;
   private double s_price,s_score;
-
   
+
+public int getComments_count() {
+	return comments_count;
+}
+public void setComments_count(int comments_count) {
+	this.comments_count = comments_count;
+}
 public String getId() {
 	return id;
 }
